@@ -1,0 +1,106 @@
+# Compila la app de escritorio (Tauri) y la publica en un Release de GitHub:
+#   - Windows: .exe PORTABLE (no requiere instalar) + instaladores .exe/.msi
+#   - macOS: .dmg (universal)  ·  Linux: .AppImage y .deb
+#
+# Para publicar una versión:
+#   git tag v1.0.0
+#   git push --tags
+# The release is published automatically.
+name: Release escritorio (Tauri)
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-latest
+            args: ''
+          - platform: macos-latest
+            args: '--target universal-apple-darwin'
+          - platform: ubuntu-22.04
+            args: ''
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependencias de sistema (Linux)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - run: npm ci
+
+      - id: tauri
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Corkboard Studio ${{ github.ref_name }}'
+          releaseBody: |
+            **Windows:** descargá `Corkboard-Studio_..._windows-x64_portable.exe` y abrilo (no hace falta instalar nada), o usá el instalador `.exe` / `.msi`.
+            **macOS:** `.dmg` · **Linux:** `.AppImage`, `.deb` o `.flatpak` (`flatpak install --user Corkboard-Studio_*.flatpak`).
+            **Web local:** descargá el código fuente y ejecutá `iniciar.bat` (Windows) o `./iniciar.sh` (Linux/macOS).
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}
+
+      - name: Subir .exe portable (Windows)
+        if: matrix.platform == 'windows-latest'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NAME="Corkboard-Studio_${{ github.ref_name }}_windows-x64_portable.exe"
+          cp src-tauri/target/release/corkboard-studio.exe "$NAME"
+          gh api --method POST \
+            -H "Content-Type: application/octet-stream" \
+            "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.tauri.outputs.releaseId }}/assets?name=$NAME" \
+            --input "$NAME"
+
+  flatpak:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install flatpak tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder
+          flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+      - name: Download .deb from the draft release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release download "${{ github.ref_name }}" --pattern '*.deb' --output flatpak/corkboard-studio.deb
+      - name: Build .flatpak bundle
+        run: |
+          cd flatpak
+          flatpak-builder --user --install-deps-from=flathub --repo=repo --force-clean build com.kurokenshi.corkboard-studio.yml
+          flatpak build-bundle repo "Corkboard-Studio_${{ github.ref_name }}_linux-x64.flatpak" com.kurokenshi.corkboard-studio --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo
+      - name: Upload .flatpak
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.ref_name }}" flatpak/*.flatpak --clobber

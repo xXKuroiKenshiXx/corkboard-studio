@@ -1,0 +1,28 @@
+id: com.kurokenshi.corkboard-studio
+runtime: org.gnome.Platform
+runtime-version: '47'
+sdk: org.gnome.Sdk
+command: corkboard-studio
+finish-args:
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=ipc
+  - --share=network
+  - --device=dri
+  - --filesystem=xdg-documents
+  - --filesystem=xdg-pictures
+  - --filesystem=xdg-download
+modules:
+  - name: corkboard-studio
+    buildsystem: simple
+    sources:
+      - type: file
+        path: corkboard-studio.deb
+    build-commands:
+      - ar -x corkboard-studio.deb
+      - tar -xf data.tar.gz
+      - install -Dm755 usr/bin/corkboard-studio /app/bin/corkboard-studio
+      - cp -r usr/share /app/
+      - desktop-file-edit --set-icon=com.kurokenshi.corkboard-studio --set-key=Exec --set-value=corkboard-studio /app/share/applications/*.desktop
+      - mv /app/share/applications/*.desktop /app/share/applications/com.kurokenshi.corkboard-studio.desktop
+      - for d in /app/share/icons/hicolor/*/apps; do mv "$d"/*.png "$d/com.kurokenshi.corkboard-studio.png"; done
