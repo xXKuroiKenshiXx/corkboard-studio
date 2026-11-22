@@ -56,12 +56,13 @@ linterna de detective, barras de cine y grabación a video, pensado para videos 
 ## 🚀 Empezar
 
 ### 🖥 App de escritorio (Windows, sin instalar nada)
-Descargá **`Corkboard-Studio_…_windows-x64_portable.exe`** desde [**Releases**](https://github.com/xXKuroiKenshiXx/corkboard-studio/releases) y abrilo. También hay instaladores para Windows (`.exe`/`.msi`), macOS (`.dmg`) y Linux (`.AppImage`/`.deb`).
+Descargá **`Corkboard-Studio_…_windows-x64_portable.exe`** desde [**Releases**](https://github.com/xXKuroiKenshiXx/corkboard-studio/releases) y abrilo. También hay instaladores para Windows (`.exe`/`.msi`), macOS (`.dmg`) y Linux (`.AppImage`/`.deb`/`.flatpak`).
 
 ### 🌐 Versión web local
 Requisito: [Node.js LTS](https://nodejs.org) (`winget install OpenJS.NodeJS.LTS`).
 
 - **Windows:** doble clic en **`iniciar.bat`** → instala dependencias y abre `http://localhost:5173`.
+- **Linux / macOS:** en una terminal, `./iniciar.sh` → instala dependencias y abre `http://localhost:5173`. (Algunos exploradores de archivos permiten doble clic → *Ejecutar*, pero no todos.)
 - **Cualquier sistema:**
   ```bash
   git clone https://github.com/xXKuroiKenshiXx/corkboard-studio.git
@@ -72,7 +73,7 @@ Requisito: [Node.js LTS](https://nodejs.org) (`winget install OpenJS.NodeJS.LTS`
 
 > El tablero se guarda solo (en el navegador o dentro de la app). Con 💾 / 📂 exportás e importás un `.json` con todo: imágenes, escenas y efectos. Sirve para pasar un tablero de la web a la app de escritorio y viceversa.
 
-### 🔨 Compilar la app de escritorio vos mismo
+### 🔨 Compilar la app
 Requisitos: [Rust](https://rustup.rs) y los [prerrequisitos de Tauri](https://v2.tauri.app/start/prerequisites/) (en Windows: Visual Studio Build Tools con *Desktop development with C++*).
 
 ```bash
@@ -81,33 +82,6 @@ npm run desktop                      # abrirla en modo desarrollo
 npx tauri build --no-bundle          # solo el .exe portable → src-tauri/target/release/corkboard-studio.exe
 npm run desktop:build                # .exe portable + instaladores → src-tauri/target/release/bundle/
 ```
-
-### 🏷 Publicar una versión (Releases)
-```bash
-git tag v1.0.0
-git push --tags
-```
-GitHub Actions compila en Windows, macOS y Linux y crea un **Release borrador** con el `.exe` portable y los instaladores. Revisalo y tocá **Publish**.
-
-### ⬆ Subir el proyecto a GitHub (primera vez)
-Con [Git](https://git-scm.com) y [GitHub CLI](https://cli.github.com) (`winget install Git.Git GitHub.cli`):
-```bash
-git init -b main
-git add -A
-git commit -m "Corkboard Studio"
-gh auth login
-gh repo create xXKuroiKenshiXx/corkboard-studio --public --source . --push
-```
-
-### 🌐 Publicar la web (GitHub Pages)
-Fuera de `localhost`, en un dominio HTTPS, tldraw pide una **clave de licencia** y sin ella deja de dibujar a los 5 segundos. Para publicar la web:
-1. Pedí una [licencia hobby gratuita](https://tldraw.dev/get-a-license/hobby) (proyectos no comerciales; mantiene la marca “made with tldraw”).
-2. En el repo: **Settings → Secrets and variables → Actions → New repository secret**, nombre `TLDRAW_LICENSE_KEY`.
-3. **Settings → Pages → Source: GitHub Actions** y ejecutá el workflow **Deploy web**.
-
-Para usarla con clave en tu PC, copiá `.env.example` como `.env` y pegá la clave.
-
----
 
 ## ⌨ Atajos
 
