@@ -1,6 +1,6 @@
 /**
  * Fuentes empaquetadas localmente (Fontsource, licencia OFL): funcionan
- * sin internet, en la versión web y en la app de escritorio (Tauri).
+ * sin internet, en localhost.
  */
 import '@fontsource/permanent-marker/400.css'
 import '@fontsource/special-elite/400.css'

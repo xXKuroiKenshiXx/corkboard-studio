@@ -4,7 +4,6 @@ title Corkboard Studio (web)
 cd /d "%~dp0"
 
 rem Corkboard Studio - version web en http://localhost:5173
-rem (la app de escritorio se descarga de Releases o se compila a mano: ver README)
 
 rem acomoda la carpeta de GitHub Actions si quedo como _github
 if exist _github (

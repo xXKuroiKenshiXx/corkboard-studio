@@ -10,7 +10,6 @@ linterna de detective, barras de cine y grabación a video, pensado para videos 
 
 [![Licencia MIT](https://img.shields.io/badge/c%C3%B3digo-MIT-green.svg)](LICENSE)
 [![tldraw](https://img.shields.io/badge/hecho%20con-tldraw%205-black.svg)](https://tldraw.dev)
-[![Tauri](https://img.shields.io/badge/escritorio-Tauri%202-24C8DB.svg)](https://tauri.app)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6.svg)
 
 <img src="docs/demo.gif" width="720" alt="Demo: mover una nota con su pin y reproducir en modo Detective Noir" />
@@ -55,10 +54,7 @@ linterna de detective, barras de cine y grabación a video, pensado para videos 
 
 ## 🚀 Empezar
 
-### 🖥 App de escritorio (Windows, sin instalar nada)
-Descargá **`Corkboard-Studio_…_windows-x64_portable.exe`** desde [**Releases**](https://github.com/xXKuroiKenshiXx/corkboard-studio/releases) y abrilo. También hay instaladores para Windows (`.exe`/`.msi`), macOS (`.dmg`) y Linux (`.AppImage`/`.deb`/`.flatpak`).
-
-### 🌐 Versión web local
+### 🌐 Usarlo (localhost)
 Requisito: [Node.js LTS](https://nodejs.org) (`winget install OpenJS.NodeJS.LTS`).
 
 - **Windows:** doble clic en **`iniciar.bat`** → instala dependencias y abre `http://localhost:5173`.
@@ -71,66 +67,7 @@ Requisito: [Node.js LTS](https://nodejs.org) (`winget install OpenJS.NodeJS.LTS`
   npm run dev
   ```
 
-> El tablero se guarda solo (en el navegador o dentro de la app). Con 💾 / 📂 exportás e importás un `.json` con todo: imágenes, escenas y efectos. Sirve para pasar un tablero de la web a la app de escritorio y viceversa.
-
-### 🔨 Compilar la app
-Requisitos: [Rust](https://rustup.rs) y los [prerrequisitos de Tauri](https://v2.tauri.app/start/prerequisites/) (en Windows: Visual Studio Build Tools con *Desktop development with C++*).
-
-```bash
-npm install
-npm run desktop                      # abrirla en modo desarrollo
-npx tauri build --no-bundle          # solo el .exe portable → src-tauri/target/release/corkboard-studio.exe
-npm run desktop:build                # .exe portable + instaladores → src-tauri/target/release/bundle/
-```
-
-## ⌨ Atajos
-
-| Atajo | Acción |
-|---|---|
-| **Clic derecho + arrastrar** | Mover el tablero (clic derecho sin arrastrar = menú) |
-| Espacio + arrastrar · clic medio | Mover el tablero |
-| Rueda | Zoom suave (o desplazar, en ⚙) |
-| `+` `−` · `Shift+0` · `Shift+1` | Zoom por pasos · 100 % · ver todo |
-| `P` · `Y` · `C` | Pin · hilo rojo (arrastrar de pin a pin) · marco de cámara |
-| `N` · `T` · `Shift+D` | Nota · texto · resaltador |
-| `Ctrl+V` · `Shift+O` | Pegar imagen (→ Polaroid) · convertir imagen en Polaroid |
-| Doble clic en una Polaroid | Escribir el caption (`Esc` o `Ctrl+Enter` para salir) |
-| `S` · `Shift+S` | Panel de escenas · agregar la selección como escenas |
-| `Shift+Enter` | Reproducir |
-| `J` | Linterna libre |
-| En reproducción: `Espacio` · `←` `→` · `Esc` · `F` | Pausa · escena anterior/siguiente · salir · pantalla completa |
-
----
-
-## 🧱 Cómo está hecho
-
-```
-src/
-├── App.tsx                    # monta tldraw y registra shapes, bindings, herramientas y capas
-├── board/
-│   ├── settings.ts            # modelo de datos (fondo, escenas, efectos, presets) en document.meta
-│   ├── textures.ts            # texturas procedurales sin costuras (corcho, fieltro, pizarra…)
-│   └── BoardBackground.tsx    # fondo que se escala y desplaza con la cámara
-├── shapes/
-│   ├── PinShape.tsx           # pin + física de péndulo + animación de clavar + herramienta P
-│   ├── ThreadShape.tsx        # hilo rojo: cuerda con física Verlet + ataduras + herramienta Y
-│   ├── mountAnim.ts           # animaciones al crear objetos (apoyar en el corcho)
-│   ├── PolaroidShape.tsx      # Polaroid con caption editable, export SVG, imagen ⇄ Polaroid
-│   └── CameraFrameShape.tsx   # marco de cámara redimensionable + herramienta C
-├── bindings/
-│   └── AttachBinding.ts       # anclaje: pines y anotaciones solidarios a su objeto
-├── player/
-│   ├── Player.ts              # motor del Modo Reproducción (línea de tiempo determinista)
-│   ├── spotAnim.ts            # animaciones de la linterna (funciones puras del tiempo)
-│   ├── entrances.ts           # entradas de objetos (clavar, pop, caer…)
-│   ├── ShowOverlay.tsx        # barras, linterna, viñeta, grano, glitch, fundido
-│   ├── PlayerControls.tsx     # controles + barra de tiempo arrastrable
-│   ├── ScenePanel.tsx         # escenas, nodos de transición, efectos y presets
-│   ├── SpotPathRecorder.tsx   # grabar el recorrido de la linterna a mano
-│   └── recorder.ts            # grabación de la pestaña a MP4/WebM
-└── ui/                        # barra superior, zoom, menú contextual, estado, import/export
-src-tauri/                     # envoltorio de escritorio (Tauri 2)
-```
+> El tablero se guarda solo (en el navegador). Con 💾 / 📂 exportás e importás un `.json` con todo: imágenes, escenas y efectos. Sirve para hacer copias o pasar un tablero a otra PC.
 
 **Todo vive en el documento.** Fondo, escenas, transiciones y efectos se guardan en `document.meta` del store de tldraw: se persisten solos (IndexedDB), viajan en el JSON exportado y entran en el historial, así que `Ctrl+Z` también deshace cambios de escenas.
 
@@ -148,16 +85,15 @@ src-tauri/                     # envoltorio de escritorio (Tauri 2)
 
 ## 🔒 Seguridad y privacidad
 
-- **Todo es local**: no hay servidores, cuentas ni telemetría. El tablero vive en el navegador (IndexedDB) o en la app de escritorio, y solo sale de ahí si vos exportás el `.json` o grabás un video.
-- **Sin secretos en el repo**: la única clave posible (licencia de tldraw para publicar la web) va en `.env` (ignorado por Git) o en los *Secrets* de GitHub Actions.
+- **Todo es local**: no hay servidores, cuentas ni telemetría. El tablero vive en el navegador (IndexedDB), y solo sale de ahí si vos exportás el `.json` o grabás un video.
+- **Sin secretos en el repo**: no hace falta ninguna clave para usarlo en `localhost`.
 - **Tableros de terceros**: al importar un `.json`, tldraw valida cada registro y el fondo personalizado solo acepta imágenes embebidas o `https:` (no se puede inyectar CSS).
-- **App de escritorio**: Content-Security-Policy estricta (solo scripts propios) y sin comandos nativos expuestos al WebView (permisos `core:default`).
 - **Dependencias**: `npm audit` sin vulnerabilidades al momento de publicar. Los workflows de GitHub usan permisos mínimos.
 
 ## 📜 Licencia
 
 - El **código de Corkboard Studio** es **[MIT](LICENSE)**: usalo, modificalo y compartilo.
-- Está construido sobre el **[SDK de tldraw](https://github.com/tldraw/tldraw)**, que es *source-available* bajo la [tldraw license](https://tldraw.dev/legal/tldraw-license) y **no** es open source. Es gratis en desarrollo y en la app de escritorio. Para publicarlo en la web hace falta una clave (la licencia hobby es gratuita para proyectos no comerciales). No se puede ocultar la marca de agua “made with tldraw”.
+- Está construido sobre el **[SDK de tldraw](https://github.com/tldraw/tldraw)**, que es *source-available* bajo la [tldraw license](https://tldraw.dev/legal/tldraw-license) y **no** es open source. Se usa gratis en desarrollo (`localhost`), que es como corre este proyecto. Publicarlo en la web o empaquetarlo como app requiere una licencia de tldraw (la hobby es gratuita para proyectos no comerciales). No se puede ocultar la marca de agua “made with tldraw”.
 - Detalle de todas las dependencias en [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## 🤝 Contribuir

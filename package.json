@@ -1,7 +1,7 @@
 {
   "name": "corkboard-studio",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite --open",
@@ -9,10 +9,7 @@
     "build": "tsc --noEmit && vite build",
     "build:web": "tsc --noEmit && vite build",
     "preview": "vite preview --open",
-    "typecheck": "tsc --noEmit",
-    "tauri": "tauri",
-    "desktop": "tauri dev",
-    "desktop:build": "tauri build"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@fontsource/caveat": "^5.3.0",
@@ -25,7 +22,6 @@
     "tldraw": "5.6.1"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.12.6",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.0.0",
@@ -39,7 +35,6 @@
     "type": "git",
     "url": "https://github.com/xXKuroiKenshiXx/corkboard-studio.git"
   },
-  "homepage": "https://xxkuroikenshixx.github.io/corkboard-studio/",
   "keywords": [
     "tldraw",
     "corkboard",
@@ -47,7 +42,6 @@
     "storytelling",
     "youtube",
     "canvas",
-    "tauri",
     "react"
   ]
 }

@@ -1,8 +1,6 @@
 # dependencias y builds
 node_modules
 dist
-src-tauri/target
-src-tauri/gen/schemas
 
 # secretos (licencia de tldraw, etc.)
 .env
@@ -13,8 +11,3 @@ src-tauri/gen/schemas
 .DS_Store
 Thumbs.db
 *.log
-flatpak/build/
-flatpak/repo/
-flatpak/.flatpak-builder/
-flatpak/*.deb
-flatpak/*.flatpak
